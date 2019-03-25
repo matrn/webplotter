@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>webplotter</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<h1>webplotter</h1>
+	<form action="" id="mainForm">
+		<input id="x" type="number" placeholder="x" />
+		<input id="y" type="number" placeholder="y" />
+		<button>Send</button>
+	</form>
+	<section>
+		<canvas width="500" height="300" id="mainCanvas">
+			This text is displayed if your browser does not support HTML5 Canvas.
+
+		</canvas>
+	</section>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="script.js"></script>
+</body>
+
+</html>
