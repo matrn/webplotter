@@ -5,7 +5,7 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const net = require('net')
 const port = 7070
-const host = '192.168.1.11'
+const host = 'localhost' // you might want to change it to your local ip for forwarding
 
 
 //creating tcp sever
