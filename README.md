@@ -1,2 +1,6 @@
 # webplotter
-clone it; run npm i; node app.js; good to go
+
+git clone;
+npm i;
+node app.js;
+good to go
