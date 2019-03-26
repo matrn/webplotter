@@ -27,6 +27,7 @@ socket.on('position', function (data) {
 	context.fillRect(res[0], res[1], 5, 5);
 });
 
+
 // throttling function
 function throttle (delay, fn) {
 	let lastCall = 0;
@@ -39,6 +40,7 @@ function throttle (delay, fn) {
 		return fn(...args);
 	}
 }
+
 // send position to server
 canvas.addEventListener('mousedown', function (e) {
 	let mouseX = e.pageX - this.offsetLeft;
@@ -47,9 +49,6 @@ canvas.addEventListener('mousedown', function (e) {
 	socket.emit('position', mouseX + '%' + mouseY)
 })
 
-function handler (e, that) {
-
-}
 canvas.addEventListener('mousemove', throttle(10, function (e) {
 	if (paint) {
 		socket.emit('position', (e.pageX - canvas.offsetLeft) + '%' + (e.pageY - canvas.offsetTop))
