@@ -4,22 +4,24 @@ const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const net = require('net')
-const port = 7070
-const host = 'localhost' // you might want to change it to your local ip for forwarding
 
+const httpPort = 3000
+
+const TCPhost = 'localhost' // you might want to change it to your local ip for forwarding
+const TCPport = 7070
+const server = net.createServer()
+let sockets = []
 
 //creating tcp sever
-const server = net.createServer()
-server.listen(port, host, () => {
-	console.log('TCP Server is running on port ' + port + '.')
+server.listen(TCPport, TCPhost, () => {
+	console.log('TCP Server is running on port ' + TCPport + '.')
 })
-
-let sockets = []
 
 server.on('connection', function (sock) {
 	console.log('CONNECTED: ' + sock.remoteAddress + ':' + sock.remotePort)
 	sockets.push(sock)
 
+	// currently not used, but it will be usefull in future versions
 	sock.on('data', function (data) {
 		console.log('DATA ' + sock.remoteAddress + ': ' + data)
 		// Write the data back to all the connected, the client will receive it as data from the server
@@ -28,7 +30,7 @@ server.on('connection', function (sock) {
 		})
 	})
 
-	// Add a 'close' event handler to this instance of socket
+	// close socket
 	sock.on('close', function (data) {
 		let index = sockets.findIndex(function (o) {
 			return o.remoteAddress === sock.remoteAddress && o.remotePort === sock.remotePort
@@ -50,15 +52,15 @@ app.get('/status', function (req, res) {
 });
 
 //start http sever
-http.listen(3000, function () {
-	console.log('listening on *:3000')
+http.listen(httpPort, function () {
+	console.log('listening on *:' + httpPort)
 });
 
 
 // socket io
 // for comunication with web and printers
 io.on('connection', function (socket) {
-	console.log('a user connected');
+	console.log('user connected');
 	socket.on('disconnect', function () {
 		console.log('user disconnected');
 	});

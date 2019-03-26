@@ -1,60 +1,88 @@
 const socket = io()
 
-// form for sending coordinates
-let form = document.getElementById('mainForm')
-let x = document.getElementById('x')
-let y = document.getElementById('y')
+let throttleTime = 10
 
+let form = document.getElementById('mainForm')
+let formX = document.getElementById('x')
+let formY = document.getElementById('y')
+
+let canvas = document.getElementById('mainCanvas')
+let context = canvas.getContext('2d')
+let lastX
+let lastY
+let paint
+let firstTap = false
+let statusCanvas = document.getElementById('statusCanvas')
+let statusContext = statusCanvas.getContext('2d')
+
+
+// form send coordinates
 form.addEventListener('submit', function (e) {
 	e.preventDefault()
-	socket.emit('position', x.value + '%' + y.value)
-	x.value = ''
-	y.value = ''
+	socket.emit('position', formX.value + '%' + formY.value)
+	formX.value = ''
+	formY.value = ''
 }, true)
 
-//canvas declarations
-let canvas = document.getElementById('mainCanvas')
-let clickX = new Array();
-let clickY = new Array();
-let clickDrag = new Array();
-let paint;
-
 // canvas paint the user input
-let context = canvas.getContext('2d');
-context.fillStyle = '#FF8984';
+
+context.fillStyle = '#FF8984'
 socket.on('position', function (data) {
 	let res = data.split('%')
-	context.fillRect(res[0], res[1], 5, 5);
+	if (firstTap) {
+		context.beginPath()
+		context.moveTo(lastX, lastY)
+		context.lineTo(res[0], res[1])
+		context.stroke()
+
+		statusContext.beginPath()
+		statusContext.moveTo(lastX, lastY)
+		statusContext.lineTo(res[0], res[1])
+		statusContext.stroke()
+	}
+	else {
+		context.fillRect(res[0], res[1], 1, 1)
+		statusContext.fillRect(res[0], res[1], 1, 1)
+	}
+	lastX = res[0]
+	lastY = res[1]
 });
 
 
 // throttling function
 function throttle (delay, fn) {
-	let lastCall = 0;
+	let lastCall = 0
 	return function (...args) {
-		const now = (new Date).getTime();
+		const now = (new Date).getTime()
 		if (now - lastCall < delay) {
-			return;
+			return
 		}
-		lastCall = now;
-		return fn(...args);
+		lastCall = now
+		return fn(...args)
 	}
 }
 
 // send position to server
 canvas.addEventListener('mousedown', function (e) {
-	let mouseX = e.pageX - this.offsetLeft;
-	let mouseY = e.pageY - this.offsetTop;
-	paint = true;
+	let mouseX = e.pageX - this.offsetLeft
+	let mouseY = e.pageY - this.offsetTop
+	paint = true
 	socket.emit('position', mouseX + '%' + mouseY)
 })
 
-canvas.addEventListener('mousemove', throttle(10, function (e) {
+canvas.addEventListener('mousemove', throttle(throttleTime, function (e) {
 	if (paint) {
-		socket.emit('position', (e.pageX - canvas.offsetLeft) + '%' + (e.pageY - canvas.offsetTop))
+		let mouseX = e.pageX - canvas.offsetLeft
+		let mouseY = e.pageY - canvas.offsetTop
+		socket.emit('position', mouseX + '%' + mouseY)
+		firstTap = true
+
 	}
 }))
 
-canvas.addEventListener('mouseup', function (e) {
-	paint = false;
-})
+function stopPainting () {
+	paint = false
+	firstTap = false
+}
+canvas.addEventListener('mouseup', stopPainting)
+canvas.addEventListener('mouseleave', stopPainting)
