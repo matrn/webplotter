@@ -1,6 +1,10 @@
-# webplotter
+webplotter
+----------
 
-git clone;
-npm i;
-node app.js;
-good to go
+## For installation
+ - `git clone https://github.com/killalad/webplotter.git`
+ - `cd webplotter`
+ - `npm i`
+ - `node app.js`
+
+__good to go__
